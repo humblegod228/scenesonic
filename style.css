@@ -1,0 +1,24 @@
+/* Apply Georgia font to only the main header */
+h1 {
+    text-align: center;
+    font-family: 'Georgia', serif; /* Georgia font for the main header */
+}
+
+/* Set background image and size */
+body {
+    background-image: url('theater bg.jpg');
+    background-size: 612px 428px;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Optional: Center the subheader */
+h2 {
+    text-align: center;
+}
