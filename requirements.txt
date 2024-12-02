@@ -2,7 +2,6 @@ numpy
 pandas
 scikit-learn
 nltk
-pandas
 streamlit
 altair
 neattext
@@ -13,3 +12,6 @@ streamlit-webrtc
 SpeechRecognition
 asyncio
 av
+librosa
+audio_recorder_streamlit
+gunicorn
