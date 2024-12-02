@@ -106,13 +106,18 @@ def predict_emotion_from_audio(file_path, model, scaler):
     scaled_features = scaler.transform(features)
     reshaped_features = np.expand_dims(scaled_features, axis=2)
 
-    predictions = model.predict(reshaped_features)
-    predicted_indices = np.argmax(predictions, axis=1)
-    predicted_emotions = [emotion_mapping[i] for i in predicted_indices]
+    predictions = model.predict(reshaped_features)  # Predictions for each chunk
+    averaged_predictions = np.mean(predictions, axis=0)  # Average probabilities across chunks
 
-    # Return the most frequent emotion
-    unique, counts = np.unique(predicted_emotions, return_counts=True)
-    return unique[np.argmax(counts)]
+    # Get the most probable emotion
+    predicted_index = np.argmax(averaged_predictions)
+    predicted_emotion = emotion_mapping[predicted_index]
+    confidence = averaged_predictions[predicted_index]
+
+    # Map predictions to emotion probabilities
+    emotion_probabilities = {emotion_mapping[i]: prob for i, prob in enumerate(averaged_predictions)}
+
+    return predicted_emotion, confidence, emotion_probabilities
 
 # ================================
 # Streamlit Frontend
@@ -175,13 +180,26 @@ def main():
             with st.spinner("Processing audio..."):
                 with open("temp_audio.wav", "wb") as f:
                     f.write(uploaded_file.getbuffer())
-                
-                # Load models
+
+            # Load models
                 model, scaler = load_emotion_recognition_model('model/emotion_recognition_model(1).h5', 'model/scaler(1).pkl')
-            
-                # Predict emotion
-                predicted_emotion = predict_emotion_from_audio("temp_audio.wav", model, scaler)
+
+            # Predict emotion
+                predicted_emotion, confidence, emotion_probabilities = predict_emotion_from_audio("temp_audio.wav", model, scaler)
+
+            # Display results
                 st.success(f"Predicted Emotion: **{predicted_emotion}**")
+                st.info(f"Confidence: {confidence:.2f}")
+
+            # Show probabilities as a bar chart
+                st.subheader("Prediction Probabilities")
+                proba_df = pd.DataFrame(list(emotion_probabilities.items()), columns=["Emotion", "Probability"])
+                fig = alt.Chart(proba_df).mark_bar().encode(
+                    x=alt.X("Emotion", sort=None),
+                    y="Probability",
+                    color="Emotion"
+                )
+                st.altair_chart(fig, use_container_width=True)
 
 if __name__ == '__main__':
     main()
