@@ -1,3 +1,5 @@
+pip install librosa
+
 import speech_recognition as sr
 import streamlit as st
 import pandas as pd
