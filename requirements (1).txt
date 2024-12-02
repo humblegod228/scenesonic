@@ -1,5 +1,5 @@
 ﻿numpy
-librosa>=0.10.0.post2
+librosa
 keras
 tensorflow
 streamlit
